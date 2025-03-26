@@ -5,6 +5,9 @@ SELECT username, email FROM users; # 원하는 열 이름으로 좁히기
 SELECT username, email # 3. 그래서 여기 가서야... username, email "선택"
     FROM users # 1. FROM으로 테이블을 불러옵니다 (실제 테이블일 수도 있고 논리적으로 존재...)
     WHERE age >= 30 ; # 2. 조건이 되는 열을 입력하고 해당 조건을 작성 - 아직 모든 열이 있음
+
+
+
 -- 02. 평균 상품 가격보다 비싼 상품의 이름과 가격을 조회하세요.
 SELECT * FROM products;
 SELECT avg(price) FROM products;
@@ -41,17 +44,54 @@ SELECT product_name, price
                                   where username = 'JohnDoe')) o
     Where p.product_id = o.product_id;
 
-
-
-
-
-
-# 여기까지만...
 -- 04. 별점 4점 이상인 리뷰의 상품 이름과 리뷰 내용을 조회하세요.
+SELECT p.product_name , r.comment
+from reviews r
+JOIN products p ON r.product_id = p.product_id
+WHERE rating >= 4;
+
+SELECT  p.product_name , r.comment
+from reviews r
+JOIN products p
+using(product_id)
+where rating >= 4;
 -- 05. 카테고리별 상품 수를 조회하세요.
+-- 재고 수량의 합을 뜻하는 게 아님.
+
 -- 06. 가장 많이 팔린 상품의 이름과 판매 수량을 조회하세요.
+SELECT p.product_name , sum(o.quantity) a
+from orders o
+Join products p USING(product_id)
+group by p.product_name
+order by a desc
+limit 1;
+-- 가장높은 결과 1개만 가져옴.
+
+
+SELECT p.product_name , sum(o.quantity) a
+from orders o
+Join products p USING(product_id)
+group by p.product_name
+having a = (select max(total_quantity)
+            from(select sum(quantity) total_quantity
+            from orders
+            group by product_id) as total_product);
+
 -- 07. 사용자별 총 주문 금액을 조회하세요.
+select username,sum(p.price * o.quantity) `총 주문금액` # 총 주문금액
+from users
+join orders o USING(user_id)
+join products p USING(product_id)
+group by user_id
+
+
 -- 08. 평균 별점이 4점 이상인 상품의 이름과 평균 별점을 조회하세요.
+select product_name, avg(rating) "avg"
+from products
+join reviews Using(product_id)
+group by product_name
+having avg>=4;
+
 -- 09. 상품별 리뷰 수를 조회하고, 리뷰 수가 2개 이상인 상품만 조회하세요.
 -- 10. T-shirt를 구매한 사용자의 이름과 이메일을 조회하세요.
 
