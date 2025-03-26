@@ -82,7 +82,7 @@ select username,sum(p.price * o.quantity) `총 주문금액` # 총 주문금액
 from users
 join orders o USING(user_id)
 join products p USING(product_id)
-group by user_id
+group by user_id;
 
 
 -- 08. 평균 별점이 4점 이상인 상품의 이름과 평균 별점을 조회하세요.
@@ -93,6 +93,19 @@ group by product_name
 having avg>=4;
 
 -- 09. 상품별 리뷰 수를 조회하고, 리뷰 수가 2개 이상인 상품만 조회하세요.
+select product_name, count(r.comment) 'reviewCnt'
+from products
+JOIN reviews r using(product_id)
+group by product_id
+having count(*)>=2;
+-- null인 리뷰가 있을 수 도있으므로 cnt(*) 사용.
+
 -- 10. T-shirt를 구매한 사용자의 이름과 이메일을 조회하세요.
+select username,email
+from users u
+join orders o on u.user_id = o.user_id
+join products p on o.product_id = p.product_id
+where product_name = 'T-shirt'
+
 
 # 와일드카드, IS NULL, IFNULL, index, function, procedure, trigger(event)
